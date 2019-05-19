@@ -61,9 +61,9 @@ vector<string> getDriveList() {
     vector<string> result;
 
     DWORD drivesBits = GetLogicalDrives();
-    for (unsigned int i = 1; i <= 'Z' - 'A' + 1; ++i) {
-        if (drivesBits & i) {
-            result.push_back(string("") + char('A' + i - 1) + ":\\");
+    for (unsigned int i = 0; i <= 'Z' - 'A'; ++i) {
+        if (drivesBits & (1 << i)) {
+            result.push_back(string("") + char('A' + i) + ":\\");
         }
     }
 

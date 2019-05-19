@@ -9,6 +9,10 @@ using std::set;
 #include "DBConnection.h"
 
 class Scanner{
+    Scanner(const Scanner &) = delete;
+    Scanner &operator=(const Scanner &) = delete;
+
+    
     set<string> extensions;
 public:
     Scanner(const set<string> &extensions = {});
