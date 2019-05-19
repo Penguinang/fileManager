@@ -26,8 +26,8 @@ DBConnection::~DBConnection() { sqlite3_close(db); }
 vector<FileInfo> DBConnection::searchPath(const string &path) const {
     string stmt = "select * from files where abPath='" + path + "'";
     vector<FileInfo> result;
-    auto callBack = [](void *NotUsed, int argc, char **argv, char **azColName) -> int {
-        vector<FileInfo> &result = *static_cast<vector<FileInfo> *>(NotUsed);
+    auto callBack = [](void *resultParam, int argc, char **argv, char **azColName) -> int {
+        vector<FileInfo> &result = *static_cast<vector<FileInfo> *>(resultParam);
 
         auto type = FileInfo::D;
         if (strcmp(argv[3], "D"))
@@ -102,4 +102,32 @@ void DBConnection::update(const FileInfo &fInfo) const {
         fprintf(stderr, "SQL error: %s\n", errMsg);
         sqlite3_free(errMsg);
     }
+}
+
+vector<FileInfo> DBConnection::searchKeyword(const string &keyWord) const{
+    string stmt = "select * from files where (abPath || fName) like '%" + keyWord + "%'";
+    vector<FileInfo> result;
+    auto callBack = [](void *resultParam, int argc, char **argv, char **azColName) -> int {
+        vector<FileInfo> &result = *static_cast<vector<FileInfo> *>(resultParam);
+
+        auto type = FileInfo::D;
+        if (strcmp(argv[3], "D"))
+            type = FileInfo::F;
+
+        tm t;
+        istringstream in(argv[4]);
+        in >> get_time(&t, "%Y-%m-%d-%H-%M-%S");
+
+        result.push_back({argv[0], argv[1], argv[2], type, t});
+        return 0;
+    };
+    char *errMsg;
+    int rc = sqlite3_exec(db, stmt.c_str(), callBack, &result, &errMsg);
+    if (rc != SQLITE_OK) {
+        fprintf(stderr, "At file %s, line %d:\n", __FILE__, __LINE__);
+        fprintf(stderr, "SQL error: %s\n", errMsg);
+        sqlite3_free(errMsg);
+    }
+
+    return result;
 }

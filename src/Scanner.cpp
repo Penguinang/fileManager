@@ -13,6 +13,12 @@ using std::endl;
 #include "FileSystem.h"
 #include "Scanner.h"
 
+
+/**
+ * --------------------------------------------------------------------------------------------------------------- 
+ * Update 
+ * --------------------------------------------------------------------------------------------------------------- 
+ */
 void Update(const DBConnection &connection) {
     vector<string> drives = getDriveList();
     for (auto driveName : drives) {
@@ -118,3 +124,20 @@ void fileDelete(const FileInfo &fInfo, const DBConnection &connection) {
     connection.deleteRow(fInfo);
 }
 void updateTime(const FileInfo &fInfo, const DBConnection &connection) { connection.update(fInfo); }
+
+
+
+/**
+ * --------------------------------------------------------------------------------------------------------------- 
+ * Locate 
+ * --------------------------------------------------------------------------------------------------------------- 
+ */
+vector<string> Locate(const string &key, const DBConnection &connection){
+    vector<FileInfo> files = connection.searchKeyword(key);
+    vector<string> result(files.size());
+    auto it = result.begin();
+    for(auto file : files){
+        *it++ = combinePathAndName(file.path, file.name);
+    }
+    return result;
+}

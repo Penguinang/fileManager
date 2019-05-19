@@ -23,6 +23,8 @@ public:
     void deleteRow(const FileInfo &fInfo) const;
     void deleteRowPattern(const string &pathPrefix) const;
     void update(const FileInfo &fInfo) const;
+
+    vector<FileInfo> searchKeyword(const string &keyWord) const;
 };
 
 #endif // !DBCONNECTION_H

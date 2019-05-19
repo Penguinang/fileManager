@@ -3,32 +3,40 @@ using std::exception;
 #include <iostream>
 using std::cout;
 using std::endl;
+#include <algorithm>
+using std::for_each;
 
 #include <Windows.h>
 
-#include "Scanner.h"
 #include "DBConnection.h"
+#include "Scanner.h"
 
-int main(void)
-{
-    try{
-        DBConnection conn("db/media.db");
+void printManual(int argc, const char *argv[]) {
+    cout << "Usage: \n"
+            "1. "
+         << argv[0]
+         << " update       or \n"
+            "2. "
+         << argv[0] << " locate name" << endl;
+}
 
-        // Update(conn);
-
-        recurDirCheck("D:\\code\\cpp\\windows\\handWin32", conn);
+int main(int argc, const char *argv[]) {
+    if (argc < 2) {
+        printManual(argc, argv);
+    } else if (argc == 2) {
+        if (strcmp(argv[1], "update")) {
+            printManual(argc, argv);
+        } else {
+            DBConnection conn("db/media.db");
+            recurDirCheck("D:\\code\\cpp\\windows\\handWin32", conn);
+        }
+    } else if (argc == 3) {
+        if (strcmp(argv[1], "locate")) {
+            printManual(argc, argv);
+        } else {
+            DBConnection conn("db/media.db");
+            auto result = Locate(argv[2], conn);
+            for_each(result.begin(), result.end(), [](const string &str) { cout << str << endl; });
+        }
     }
-    catch(exception &e){
-        cout << e.what() << endl;
-    }
-
-    // WIN32_FIND_DATA data;
-    // HANDLE hFind = FindFirstFile("D:\\code\\*", &data);      // DIRECTORY
-
-    // if ( hFind != INVALID_HANDLE_VALUE ) {
-    //     do {
-    //         std::cout << data.cFileName << std::endl;
-    //     } while (FindNextFile(hFind, &data));
-    //     FindClose(hFind);
-    // }
 }
