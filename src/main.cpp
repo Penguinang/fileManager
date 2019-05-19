@@ -28,14 +28,17 @@ int main(int argc, const char *argv[]) {
             printManual(argc, argv);
         } else {
             DBConnection conn("db/media.db");
-            recurDirCheck("D:\\code\\cpp\\windows\\handWin32", conn);
+            Scanner scanner({"cpp"});
+            // scanner.recurDirCheck("D:\\code\\cpp\\windows\\handWin32", conn);
+            scanner.Update(conn);
         }
     } else if (argc == 3) {
         if (strcmp(argv[1], "locate")) {
             printManual(argc, argv);
         } else {
             DBConnection conn("db/media.db");
-            auto result = Locate(argv[2], conn);
+            Scanner scanner({"cpp"});
+            auto result = scanner.Locate(argv[2], conn);
             for_each(result.begin(), result.end(), [](const string &str) { cout << str << endl; });
         }
     }

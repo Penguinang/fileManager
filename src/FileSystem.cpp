@@ -17,6 +17,8 @@
 Directory::Directory(const string &path) : path(path) {}
 Directory::~Directory() {}
 
+const tm epochTime = {0, 0, 0, 1, 0, 0, 0, 0, 0};
+
 inline time_t FileTimeToTimeT(const FILETIME &fTime) {
     long long naS = (long long(fTime.dwHighDateTime) << 32) + fTime.dwLowDateTime;
     return (naS - 116444736000000000) / 10000000;
@@ -32,18 +34,24 @@ vector<FileInfo> Directory::getChildFile() {
             string fName = data.cFileName;
             if(fName == "." || fName == "..")
                 continue;
-            string extension;
-            size_t index = fName.find_last_of('.');
-            if (index != string::npos) {
-                extension = fName.substr(index + 1);
-            }
+
             auto type =
                 (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? FileInfo::D : FileInfo::F;
+            
+            string extension;
+            if(type == FileInfo::F){
+                size_t index = fName.find_last_of('.');
+                if (index != string::npos) {
+                    extension = fName.substr(index + 1);
+                }
+            }
+
             time_t t = FileTimeToTimeT(data.ftLastWriteTime);
             tm *pTm = localtime(&t);
             result.push_back({path, fName, extension, type, *pTm});
 
         } while (FindNextFile(hF, &data));
+        FindClose(hF);
     }
 
     return result;
@@ -60,4 +68,32 @@ vector<string> getDriveList() {
     }
 
     return result;
+}
+
+FileInfo getFileInfo(const string &path){
+    WIN32_FIND_DATA data;
+    HANDLE hF = FindFirstFile(path.c_str(), &data);
+
+    if (hF != INVALID_HANDLE_VALUE) {
+        string fName = data.cFileName;
+        string pathWithoutName = path.substr(0, path.find(fName)-1);
+        auto type =
+            (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? FileInfo::D : FileInfo::F;
+        
+        string extension;
+        if(type == FileInfo::F){
+            size_t index = fName.find_last_of('.');
+            if (index != string::npos) {
+                extension = fName.substr(index + 1);
+            }
+        }
+
+        time_t t = FileTimeToTimeT(data.ftLastWriteTime);
+        tm *pTm = localtime(&t);
+        FindClose(hF);
+        return {pathWithoutName, fName, extension, type, *pTm};
+    }
+    else{
+        return {"NULL", "NULL", "NULL", FileInfo::D, epochTime};
+    }
 }

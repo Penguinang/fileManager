@@ -3,3 +3,4 @@ bin
 build
 *.db
 !mediaBk.db
+*.db-journal

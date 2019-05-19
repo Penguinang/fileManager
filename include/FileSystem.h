@@ -19,6 +19,7 @@ struct FileInfo{
     enum {D, F} type;
     tm lastUpdateTime;
 };
+extern const tm epochTime;
 
 inline bool operator<(const FileInfo &lhs, const FileInfo &rhs){
     return lhs.path < rhs.path || (lhs.path == rhs.path && lhs.name < rhs.name) ||
@@ -53,5 +54,6 @@ inline bool completeEq(const FileInfo &lhs, const FileInfo &rhs){
 }
 
 vector<string> getDriveList();
+FileInfo getFileInfo(const string &path);
 
 #endif // !FILE_SYSTEM_H
