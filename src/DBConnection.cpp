@@ -91,7 +91,7 @@ void DBConnection::deleteRowPattern(const string &pathPrefix) const {
 }
 void DBConnection::update(const FileInfo &fInfo) const {
     ostringstream out;
-    out << put_time(&fInfo.lastUpdateTime, "");
+    out << put_time(&fInfo.lastUpdateTime, "%Y-%m-%d-%H-%M-%S");
     string stmt = "update files set lastUpdateTime='" + out.str() + "' where abpath='" +
                   fInfo.path + "' and fname='" + fInfo.name + "'";
 

@@ -2,13 +2,13 @@
 
 #include "FileSystem.h"
 
-bool operator<(const FileInfo &lhs, const FileInfo &rhs) {
-    return lhs.path < rhs.path || (lhs.path == rhs.path && lhs.name < rhs.name) ||
-           (lhs.path == rhs.path && lhs.name == rhs.name && lhs.type < rhs.type);
-}
-bool operator<(const tm &lhs, const tm &rhs) {
-    return mktime(const_cast<tm *>(&lhs)) < mktime(const_cast<tm *>(&rhs));
-}
+// bool operator<(const FileInfo &lhs, const FileInfo &rhs) {
+//     return lhs.path < rhs.path || (lhs.path == rhs.path && lhs.name < rhs.name) ||
+//            (lhs.path == rhs.path && lhs.name == rhs.name && lhs.type < rhs.type);
+// }
+// bool operator<(const tm &lhs, const tm &rhs) {
+//     return mktime(const_cast<tm *>(&lhs)) < mktime(const_cast<tm *>(&rhs));
+// }
 
 // #ifdef UNICODE
 // #undef UNICODE

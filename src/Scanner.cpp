@@ -1,7 +1,10 @@
 #include <algorithm>
 using std::set_difference;
+using std::set_intersection;
 using std::sort;
 #include <functional>
+
+#include <xutility>
 
 #include <iostream>
 using std::cout;
@@ -19,8 +22,11 @@ void Update(const DBConnection &connection) {
     }
 }
 
-static int recuDepth = 0;
 void recurDirCheck(const string &dirName, const DBConnection &connection) {
+    static int recuDepth = 0;
+    ++ recuDepth;
+    if(recuDepth <= 3)
+        cout << "scaning " << dirName << endl;
     Directory dir(dirName);
     auto nowFiles = dir.getChildFile();
     auto lastFiles = connection.searchPath(dirName);
@@ -35,6 +41,8 @@ void recurDirCheck(const string &dirName, const DBConnection &connection) {
 
     for (auto it = result.begin(); it != itEnd; ++it) {
         if (it->type == FileInfo::F) {
+            if(recuDepth <= 3)
+                cout << "adding " << it->name << endl;
             itemAdd(*it, connection);
         } else {
             recurDirAdd(*it, connection);
@@ -44,7 +52,6 @@ void recurDirCheck(const string &dirName, const DBConnection &connection) {
     // 删除的文件
     itEnd = set_difference(lastFiles.begin(), lastFiles.end(), nowFiles.begin(), nowFiles.end(),
                            result.begin());
-
     for (auto it = result.begin(); it != itEnd; ++it) {
         cout << "deleting " << it->name << endl;
         if (it->type == FileInfo::F) {
@@ -55,10 +62,23 @@ void recurDirCheck(const string &dirName, const DBConnection &connection) {
     }
 
     // 修改的文件，若名字相同但日期不同则判断为修改
-    itEnd = set_difference(nowFiles.begin(), nowFiles.end(), lastFiles.begin(), lastFiles.end(),
-                           result.begin(), [](const FileInfo &lhs, const FileInfo &rhs) {
-                               return lhs.path == rhs.path && lhs.name == rhs.name && lhs.lastUpdateTime < rhs.lastUpdateTime;
-                           });
+    // itEnd = set_difference(nowFiles.begin(), nowFiles.end(), lastFiles.begin(), lastFiles.end(),
+    //                        result.begin(), [](const FileInfo &lhs, const FileInfo &rhs) {
+    //                            return lhs.path == rhs.path && lhs.name == rhs.name &&
+    //                            lhs.lastUpdateTime < rhs.lastUpdateTime;
+    //                        });
+
+    // 此谓词要求对两个对象只有唯一一边的关系
+    itEnd = set_intersection(
+        nowFiles.begin(), nowFiles.end(), lastFiles.begin(), lastFiles.end(), result.begin(),
+        [](const FileInfo &lhs, const FileInfo &rhs) -> bool {
+            return lhs.path < rhs.path || (lhs.path == rhs.path && lhs.name < rhs.name) ||
+                   (lhs.path == rhs.path && lhs.name == rhs.name && lhs.type < rhs.type) ||
+                   (completeEq(lhs, rhs) && &lhs < &rhs);
+
+        });
+
+    size_t size = itEnd - result.begin();
 
     for (auto it = result.begin(); it != itEnd; ++it) {
         cout << "updating " << it->name << endl;
@@ -67,12 +87,15 @@ void recurDirCheck(const string &dirName, const DBConnection &connection) {
         }
         updateTime(*it, connection);
     }
+
+    --recuDepth;
 }
 
 void recurDirAdd(const FileInfo &fInfo, const DBConnection &connection) {
+    static int recuDepth = 0;
     ++recuDepth;
-    if(recuDepth <= 4)
-            cout << "processing " << fInfo.name << " ..." << endl;
+    if (recuDepth <= 4)
+        cout << "adding " << fInfo.name << " ..." << endl;
     Directory dir(combinePathAndName(fInfo.path, fInfo.name));
     auto files = dir.getChildFile();
     for (auto file : files) {
@@ -88,11 +111,10 @@ void recurDirAdd(const FileInfo &fInfo, const DBConnection &connection) {
 
 void itemAdd(const FileInfo &fInfo, const DBConnection &connection) { connection.insertRow(fInfo); }
 void dirDelete(const FileInfo &fInfo, const DBConnection &connection) {
-    connection.deleteRowPattern(combinePathAndName(combinePathAndName(fInfo.path, fInfo.name), "%"));
+    connection.deleteRowPattern(
+        combinePathAndName(combinePathAndName(fInfo.path, fInfo.name), "%"));
 }
-void fileDelete(const FileInfo &fInfo, const DBConnection &connection){
+void fileDelete(const FileInfo &fInfo, const DBConnection &connection) {
     connection.deleteRow(fInfo);
 }
-void updateTime(const FileInfo &fInfo, const DBConnection &connection){
-    connection.update(fInfo);
-}
+void updateTime(const FileInfo &fInfo, const DBConnection &connection) { connection.update(fInfo); }
