@@ -4,3 +4,5 @@ build
 *.db
 !mediaBk.db
 *.db-journal
+*.aps
+*.res
