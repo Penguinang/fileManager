@@ -13,18 +13,19 @@ class Scanner{
     Scanner &operator=(const Scanner &) = delete;
 
     
-    set<string> extensions;
+    set<tstring> extensions;
 public:
-    Scanner(const set<string> &extensions = {});
+    Scanner(const set<tstring> &extensions = {});
     void Update(const DBConnection &connection);
-    vector<string> Locate(const string &key, const DBConnection &connection);
+    vector<tstring> Locate(const tstring &key, const DBConnection &connection);
 // private:
-    void recurDirCheck(const string &dirName, const DBConnection &connection);
+    void recurDirCheck(const tstring &dirName, const DBConnection &connection);
     void recurDirAdd(const FileInfo &fInfo, const DBConnection &connection);
     void itemAdd(const FileInfo &fInfo, const DBConnection &connection);
     void dirDelete(const FileInfo &fInfo, const DBConnection &connection);
     void fileDelete(const FileInfo &fInfo, const DBConnection &connection);
     void updateTime(const FileInfo &fInfo, const DBConnection &connection);
 };
+
 
 #endif // !SCANNER_H

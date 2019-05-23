@@ -30,16 +30,16 @@ public:
 template<int MaxDepth, int guid>
 int DebugMessage<MaxDepth, guid>::curRecurDepth = 0;
 
-Scanner::Scanner(const set<string> &extensions) : extensions(extensions) {}
+Scanner::Scanner(const set<tstring> &extensions) : extensions(extensions) {}
 void Scanner::Update(const DBConnection &connection) {
-    vector<string> drives = getDriveList();
+    vector<tstring> drives = getDriveList();
     for (auto driveName : drives) {
         recurDirCheck(driveName, connection);
     }
 }
-vector<string> Scanner::Locate(const string &key, const DBConnection &connection) {
-    vector<FileInfo> files = connection.searchKeyword(key);
-    vector<string> result(files.size());
+vector<tstring> Scanner::Locate(const tstring &key, const DBConnection &connection) {
+    vector<FileInfo> files = connection.searchKeyword(to_string(key));
+    vector<tstring> result(files.size());
     auto it = result.begin();
     for (auto file : files) {
         *it++ = combinePathAndName(file.path, file.name);
@@ -47,12 +47,12 @@ vector<string> Scanner::Locate(const string &key, const DBConnection &connection
     return result;
 }
 
-void Scanner::recurDirCheck(const string &dirName, const DBConnection &connection) {
-    DebugMessage<3, __LINE__> printer("scaning " + dirName + " ...");
+void Scanner::recurDirCheck(const tstring &dirName, const DBConnection &connection) {
+    DebugMessage<3, __LINE__> printer("scaning " + to_string(dirName) + " ...");
 
     Directory dir(dirName);
     auto nowFiles = dir.getChildFile();
-    auto lastFiles = connection.searchPath(dirName);
+    auto lastFiles = connection.searchPath(to_string(dirName));
     // TODO: 让数据库内的文件是排好序的
     sort(nowFiles.begin(), nowFiles.end());
     sort(lastFiles.begin(), lastFiles.end());
@@ -72,7 +72,7 @@ void Scanner::recurDirCheck(const string &dirName, const DBConnection &connectio
     for (auto it = result.begin(); it != itEnd; ++it) {
         if (it->type == FileInfo::F) {
             if (printer.curRecurDepth <= 3)
-                cout << "adding " << combinePathAndName(it->path, it->name) << endl;
+                cout << "adding " << to_string(combinePathAndName(it->path, it->name)) << endl;
             itemAdd(*it, connection);
         } else {
             recurDirAdd(*it, connection);
@@ -83,7 +83,7 @@ void Scanner::recurDirCheck(const string &dirName, const DBConnection &connectio
     itEnd = set_difference(lastFiles.begin(), lastFiles.end(), nowFiles.begin(), nowFiles.end(),
                            result.begin());
     for (auto it = result.begin(); it != itEnd; ++it) {
-        cout << "deleting " << combinePathAndName(it->path, it->name) << endl;
+        cout << "deleting " << to_string(combinePathAndName(it->path, it->name)) << endl;
         if (it->type == FileInfo::F) {
             fileDelete(*it, connection);
         } else {
@@ -102,7 +102,7 @@ void Scanner::recurDirCheck(const string &dirName, const DBConnection &connectio
         });
 
     for (auto it = result.begin(); it != itEnd; ++it) {
-        cout << "updating " << combinePathAndName(it->path, it->name) << endl;
+        cout << "updating " << to_string(combinePathAndName(it->path, it->name)) << endl;
         if (it->type == FileInfo::D) {
             recurDirCheck(it->path + it->name, connection);
         }
@@ -110,7 +110,7 @@ void Scanner::recurDirCheck(const string &dirName, const DBConnection &connectio
     }
 }
 void Scanner::recurDirAdd(const FileInfo &fInfo, const DBConnection &connection) {
-    DebugMessage<4, __LINE__> printer("adding " + combinePathAndName(fInfo.path, fInfo.name) + " ...");
+    DebugMessage<4, __LINE__> printer("adding " + to_string(combinePathAndName(fInfo.path, fInfo.name)) + " ...");
 
     itemAdd({fInfo.path, fInfo.name, fInfo.extension, fInfo.type, epochTime}, connection);
     Directory dir(combinePathAndName(fInfo.path, fInfo.name));
@@ -130,7 +130,7 @@ void Scanner::itemAdd(const FileInfo &fInfo, const DBConnection &connection) {
 }
 void Scanner::dirDelete(const FileInfo &fInfo, const DBConnection &connection) {
     connection.deleteRowPattern(
-        combinePathAndName(combinePathAndName(fInfo.path, fInfo.name), "%"));
+        to_string(combinePathAndName(combinePathAndName(fInfo.path, fInfo.name), TEXT("%"))));
 }
 void Scanner::fileDelete(const FileInfo &fInfo, const DBConnection &connection) {
     connection.deleteRow(fInfo);

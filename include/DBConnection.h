@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-using std::string;
+//using std::string;
 using std::vector;
 
 #include <sqlite3.h>

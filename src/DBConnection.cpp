@@ -46,7 +46,7 @@ vector<FileInfo> DBConnection::searchPath(const string &path) const {
         // TODO: format
         in >> get_time(&t, "%Y-%m-%d-%H-%M-%S");
 
-        result.push_back({argv[0], argv[1], argv[2], type, t});
+        result.push_back({to_tstring(argv[0]), to_tstring(argv[1]), to_tstring(argv[2]), type, t});
         return 0;
     };
     char *errMsg;
@@ -64,8 +64,8 @@ vector<FileInfo> DBConnection::searchPath(const string &path) const {
 void DBConnection::insertRow(const FileInfo &fInfo) const {
     ostringstream out;
     out << put_time(&fInfo.lastUpdateTime, "%Y-%m-%d-%H-%M-%S");
-    string stmt = "insert into files values(\"" + fInfo.path + "\", \"" + fInfo.name + "\", \"" +
-                  fInfo.extension + "\", \"" +
+    string stmt = "insert into files values(\"" + to_string(fInfo.path) + "\", \"" + to_string(fInfo.name) + "\", \"" +
+                  to_string(fInfo.extension) + "\", \"" +
 
                   (fInfo.type == FileInfo::D ? "D" : "F") + "\", \"" + out.str() + "\")";
 
@@ -80,7 +80,7 @@ void DBConnection::insertRow(const FileInfo &fInfo) const {
 }
 void DBConnection::deleteRow(const FileInfo &fInfo) const {
     string stmt =
-        "delete from files where abPath=\"" + fInfo.path + "\" and fName=\"" + fInfo.name + "\"";
+        "delete from files where abPath=\"" + to_string(fInfo.path) + "\" and fName=\"" + to_string(fInfo.name) + "\"";
 
     char *errMsg;
     int rc = sqlite3_exec(db, stmt.c_str(), 0, 0, &errMsg);
@@ -107,7 +107,7 @@ void DBConnection::update(const FileInfo &fInfo) const {
     ostringstream out;
     out << put_time(&fInfo.lastUpdateTime, "%Y-%m-%d-%H-%M-%S");
     string stmt = "update files set lastUpdateTime=\"" + out.str() + "\" where abpath=\"" +
-                  fInfo.path + "\" and fname=\"" + fInfo.name + "\"";
+                  to_string(fInfo.path) + "\" and fname=\"" + to_string(fInfo.name) + "\"";
 
     char *errMsg;
     int rc = sqlite3_exec(db, stmt.c_str(), 0, 0, &errMsg);
@@ -133,7 +133,7 @@ vector<FileInfo> DBConnection::searchKeyword(const string &keyWord) const {
         istringstream in(argv[4]);
         in >> get_time(&t, "%Y-%m-%d-%H-%M-%S");
 
-        result.push_back({argv[0], argv[1], argv[2], type, t});
+        result.push_back({to_tstring(argv[0]), to_tstring(argv[1]), to_tstring(argv[2]), type, t});
         return 0;
     };
     char *errMsg;

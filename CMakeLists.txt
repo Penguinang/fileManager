@@ -15,12 +15,10 @@ add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 
 include_directories(include)
 link_directories(lib)
-link_libraries(
-    sqlite3)
+link_libraries(sqlite3)
 
 # 1. Cli utils, like mlocate
 set(CLI_SOURCE
-    cliLocate
     FileSystem
     Scanner
     DBConnection
@@ -29,10 +27,13 @@ add_executable(clilocate)
 foreach(file ${CLI_SOURCE})
     target_sources(clilocate PUBLIC src/${file}.cpp)
 endforeach(file ${CLI_SOURCE})
+target_sources(clilocate PUBLIC src/cliLocate.cpp)
+
 
 # 2. GUI utils
 set(GUI_SOURCE
     LeftView
+    CRightView
     MainFrm
     ManagerGUI
     ManagerGUIDoc
@@ -44,8 +45,14 @@ foreach(file ${GUI_SOURCE})
     target_sources(guiManager PUBLIC src/MFCFrontEnd/${file}.cpp)
     target_sources(guiManager PUBLIC src/MFCFrontEnd/${file}.h)
 endforeach(file ${GUI_SOURCE})
+foreach(file ${CLI_SOURCE})
+    target_sources(guiManager PUBLIC src/${file}.cpp)
+    target_sources(guiManager PUBLIC include/${file}.h)
+endforeach(file ${CLI_SOURCE})
+
 target_sources(guiManager PUBLIC src/MFCFrontEnd/ManagerGUI.rc)
 target_sources(guiManager PUBLIC src/MFCFrontEnd/res/ManagerGUI.rc2)
+target_include_directories(guiManager PUBLIC src/MFCFrontEnd)
 
 set(CMAKE_MFC_FLAG 1)
 target_compile_definitions(guiManager PUBLIC -D_AFXDLL -D_UNICODE -DUNICODE -D_WINDOWS -D_DEBUG)

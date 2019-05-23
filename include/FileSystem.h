@@ -5,7 +5,23 @@
 #include <vector>
 #include <ctime>
 using std::string;
+using std::wstring;
 using std::vector;
+
+#include <Windows.h>
+typedef std::basic_string<TCHAR> tstring;
+//typedef wstring tstring;
+//#define tstring std::basic_string<TCHAR>
+
+inline string to_string(const wstring &str) {
+	return string(str.begin(), str.end());
+}
+inline string to_string(const string &str) {
+	return str;
+}
+inline tstring to_tstring(const char *rawstr) {
+	return tstring(rawstr, rawstr + strlen(rawstr));
+}
 
 extern const tm epochTime;
 inline bool operator<(const tm &lhs, const tm &rhs){
@@ -18,11 +34,11 @@ inline bool operator==(const tm &lhs, const tm &rhs){
 
 struct FileInfo{
     // ab path
-    string path;
+    tstring path;
     // name with extension
-    string name;
+    tstring name;
     // txt, doc ...
-    string extension;
+    tstring extension;
     // F for file and D for directory
     enum {D, F} type;
     tm lastUpdateTime;
@@ -46,20 +62,20 @@ inline bool completeEq(const FileInfo &lhs, const FileInfo &rhs){
 
 class Directory{
 private:
-    string path;
+    tstring path;
 public:
-    Directory(const string &path);
+    Directory(const tstring &path);
     ~Directory();
 
     vector<FileInfo> getChildFile();
 };
 
-inline string combinePathAndName(const string &path, const string &name){
-    return path + "\\" + name; 
+inline tstring combinePathAndName(const tstring &path, const tstring &name){
+    return path + TEXT("\\") + name; 
 }
 
 
-vector<string> getDriveList();
-FileInfo getFileInfo(const string &path);
+vector<tstring> getDriveList();
+FileInfo getFileInfo(const tstring &path);
 
 #endif // !FILE_SYSTEM_H

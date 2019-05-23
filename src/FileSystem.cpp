@@ -14,7 +14,7 @@
 // #undef UNICODE
 // #endif // UNICODE
 
-Directory::Directory(const string &path) : path(path) {}
+Directory::Directory(const tstring &path) : path(path) {}
 Directory::~Directory() {}
 
 const tm epochTime = {0, 0, 0, 1, 0, 0, 0, 0, 0};
@@ -28,20 +28,20 @@ vector<FileInfo> Directory::getChildFile() {
     vector<FileInfo> result;
 
     WIN32_FIND_DATA data;
-    HANDLE hF = FindFirstFile(combinePathAndName(path, "*").c_str(), &data);
+    HANDLE hF = FindFirstFile(combinePathAndName(path, TEXT("*")).c_str(), &data);
     if (hF != INVALID_HANDLE_VALUE) {
         do {
-            string fName = data.cFileName;
-            if(fName == "." || fName == "..")
+            tstring fName = data.cFileName;
+            if(fName == TEXT(".") || fName == TEXT(".."))
                 continue;
 
             auto type =
                 (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? FileInfo::D : FileInfo::F;
             
-            string extension;
+			tstring extension;
             if(type == FileInfo::F){
                 size_t index = fName.find_last_of('.');
-                if (index != string::npos) {
+                if (index != tstring::npos) {
                     extension = fName.substr(index + 1);
                 }
             }
@@ -57,33 +57,33 @@ vector<FileInfo> Directory::getChildFile() {
     return result;
 }
 
-vector<string> getDriveList() {
-    vector<string> result;
+vector<tstring> getDriveList() {
+    vector<tstring> result;
 
     DWORD drivesBits = GetLogicalDrives();
     for (unsigned int i = 0; i <= 'Z' - 'A'; ++i) {
         if (drivesBits & (1 << i)) {
-            result.push_back(string("") + char('A' + i) + ":\\");
+            result.push_back(tstring(TEXT("")) + TCHAR('A' + i) + TEXT(":\\"));
         }
     }
 
     return result;
 }
 
-FileInfo getFileInfo(const string &path){
+FileInfo getFileInfo(const tstring &path){
     WIN32_FIND_DATA data;
     HANDLE hF = FindFirstFile(path.c_str(), &data);
 
     if (hF != INVALID_HANDLE_VALUE) {
-        string fName = data.cFileName;
-        string pathWithoutName = path.substr(0, path.find(fName)-1);
+        tstring fName = data.cFileName;
+        tstring pathWithoutName = path.substr(0, path.find(fName)-1);
         auto type =
             (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? FileInfo::D : FileInfo::F;
         
-        string extension;
+        tstring extension;
         if(type == FileInfo::F){
             size_t index = fName.find_last_of('.');
-            if (index != string::npos) {
+            if (index != tstring::npos) {
                 extension = fName.substr(index + 1);
             }
         }
@@ -94,6 +94,6 @@ FileInfo getFileInfo(const string &path){
         return {pathWithoutName, fName, extension, type, *pTm};
     }
     else{
-        return {"NULL", "NULL", "NULL", FileInfo::D, epochTime};
+        return {TEXT("NULL"), TEXT("NULL"), TEXT("NULL"), FileInfo::D, epochTime};
     }
 }
