@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-//using std::string;
+using std::string;
 using std::vector;
 
 #include <sqlite3.h>
@@ -13,6 +13,7 @@ using std::vector;
 // TODO: 
 // 数据库的操作已经是瓶颈了，所以应该将数据库的修改缓存起来，批量提交
 // https://stackoverflow.com/questions/26974203/sqlite-c-insertion-is-slow
+
 
 class DBConnection {
 	DBConnection(DBConnection &) = delete;
@@ -32,7 +33,9 @@ public:
 	virtual void update(const FileInfo &fInfo) const;
 	void deleteRowPattern(const string &pathPrefix) const;
 
-	vector<FileInfo> searchKeyword(const string &keyWord) const;
+	vector<FileInfo> 
+	searchKeyword(const tstring &keyWord,
+	 const ExtensionFilter &extensions = {{}}) const;
 };
 
 class CachedDBConnection : public DBConnection{

@@ -1,13 +1,9 @@
 cmake_minimum_required(VERSION 3.11)
-
-
 project(MediaManager)
+
 set(TOY_VERSION_MAJOE 1)
 set(TOY_VERSION_MINOR 0)
 set(CMAKE_BUILD_TYPE "Debug")
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 cmake_policy(SET CMP0076 NEW)
 
@@ -17,7 +13,9 @@ include_directories(include)
 link_directories(lib)
 link_libraries(sqlite3)
 
+#################################################################################################################
 # 1. Cli utils, like mlocate
+#################################################################################################################
 set(CLI_SOURCE
     FileSystem
     Scanner
@@ -26,11 +24,14 @@ set(CLI_SOURCE
 add_executable(clilocate)
 foreach(file ${CLI_SOURCE})
     target_sources(clilocate PUBLIC src/${file}.cpp)
+    target_sources(clilocate PUBLIC include/${file}.h)
 endforeach(file ${CLI_SOURCE})
 target_sources(clilocate PUBLIC src/cliLocate.cpp)
 
 
+#################################################################################################################
 # 2. GUI utils
+#################################################################################################################
 set(GUI_SOURCE
     LeftView
     CRightView
@@ -58,7 +59,12 @@ set(CMAKE_MFC_FLAG 1)
 target_compile_definitions(guiManager PUBLIC -D_AFXDLL -D_UNICODE -DUNICODE -D_WINDOWS -D_DEBUG)
 target_link_options(guiManager PUBLIC "-subsystem:windows")
 
+#################################################################################################################
+# Ended
+#################################################################################################################
 
+set_target_properties(clilocate guiManager PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 
 if ( MSVC )

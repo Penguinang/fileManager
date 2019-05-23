@@ -8,20 +8,8 @@ using std::string;
 using std::wstring;
 using std::vector;
 
-#include <Windows.h>
-typedef std::basic_string<TCHAR> tstring;
-//typedef wstring tstring;
-//#define tstring std::basic_string<TCHAR>
+#include "tstring.h"
 
-inline string to_string(const wstring &str) {
-	return string(str.begin(), str.end());
-}
-inline string to_string(const string &str) {
-	return str;
-}
-inline tstring to_tstring(const char *rawstr) {
-	return tstring(rawstr, rawstr + strlen(rawstr));
-}
 
 extern const tm epochTime;
 inline bool operator<(const tm &lhs, const tm &rhs){

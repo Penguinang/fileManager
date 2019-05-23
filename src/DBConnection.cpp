@@ -11,6 +11,7 @@ using std::find;
 
 #include <ctime>
 
+#include "Scanner.h"
 #include "DBConnection.h"
 
 /**
@@ -19,7 +20,22 @@ using std::find;
  * -------------------------------------------------------------------------------------------------------
  */
 
+const char *init_db = "create table files (abPath varchar(300), fName varchar(100), extension char(8), fType char(1), "
+    "lastUpdateTime date, primary key (abPath, fName));"
+"create table MediaType (extension char(8) primary key, typeCode int);"
+"insert into MediaType values ('mp3', 1), ('wav', 1);"
+"insert into MediaType values ('jpg', 2), ('png', 2), ('gif', 2), ('jpeg', 2);"
+"insert into MediaType values ('mp4', 3), ('mkv', 3);"
+"insert into MediaType values ('doc', 4), ('docx', 4), ('pdf', 4);";
+
 DBConnection::DBConnection(const string &name) {
+    char *errMsg;
+    if(GetFileAttributes(to_tstring(name).c_str()) == 0xFFFFFFFF){
+        sqlite3_open(name.c_str(), &db);
+        sqlite3_exec(db, init_db, 0, 0, &errMsg);
+        sqlite3_close(db);
+    }
+
     int rc = sqlite3_open(name.c_str(), &db);
     if (rc) {
         fprintf(stderr, "At file %s, line %d:\n", __FILE__, __LINE__);
@@ -119,8 +135,18 @@ void DBConnection::update(const FileInfo &fInfo) const {
     }
 }
 
-vector<FileInfo> DBConnection::searchKeyword(const string &keyWord) const {
-    string stmt = "select * from files where (abPath || fName) like \"%" + keyWord + "%\" and fType=\"F\"";
+vector<FileInfo> DBConnection::searchKeyword(const tstring &keyWord, const ExtensionFilter &extensions) const {
+    string stmt = "select * from files where (abPath || fName) like \"%" + to_string(keyWord) + "%\" and fType=\"F\"";
+    if(!extensions.extensions.empty()){
+        string exStr = "(";
+        for(auto &ext : extensions.extensions){
+            exStr += "\"" + to_string(ext)+"\",";
+        }
+        exStr.pop_back();
+        exStr += ")";
+        stmt += " and extension in " + exStr;
+    }
+
     vector<FileInfo> result;
     auto callBack = [](void *resultParam, int argc, char **argv, char **azColName) -> int {
         vector<FileInfo> &result = *static_cast<vector<FileInfo> *>(resultParam);
@@ -153,6 +179,7 @@ vector<FileInfo> DBConnection::searchKeyword(const string &keyWord) const {
  * CachedDBConnection
  * -------------------------------------------------------------------------------------------------------
  */
+
 CachedDBConnection::CachedDBConnection(const string &name, size_t cacheSize)
     : DBConnection(name), maxSize(cacheSize) {
     insertQueue.reserve(cacheSize);
