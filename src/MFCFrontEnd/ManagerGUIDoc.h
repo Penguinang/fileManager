@@ -66,9 +66,10 @@ protected:
 
 private:
 	shared_ptr<Locater> locater;
-	unique_ptr<DBConnection> conn;
+	shared_ptr<DBConnection> conn;
 
 public:
 	vector<FileInfo> list;
 	void OnTreeSelChanged(MEDIA type);
+	afx_msg void OnUpdateDB();
 };

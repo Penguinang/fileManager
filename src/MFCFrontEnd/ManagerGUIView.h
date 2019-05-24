@@ -33,6 +33,7 @@ public:
 #endif
 
 protected:
+	size_t maxRows = 50;
 
 // Generated message map functions
 protected:
@@ -40,6 +41,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	void OnListUpdated();
+	afx_msg void OnLoadmore();
 };
 
 #ifndef _DEBUG  // debug version in ManagerGUIView.cpp

@@ -28,6 +28,7 @@ IMPLEMENT_DYNCREATE(CManagerGUIView, CListView)
 
 BEGIN_MESSAGE_MAP(CManagerGUIView, CListView)
 	ON_WM_STYLECHANGED()
+	ON_COMMAND(ID_LOADMORE, &CManagerGUIView::OnLoadmore)
 END_MESSAGE_MAP()
 
 // CManagerGUIView construction/destruction
@@ -57,6 +58,15 @@ void CManagerGUIView::OnInitialUpdate()
 
 	// TODO: You may populate your ListView with items by directly accessing
 	//  its list control through a call to GetListCtrl().
+	CListCtrl &guilist = GetListCtrl();
+	guilist.ModifyStyle(NULL, LVS_REPORT);
+	guilist.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+	guilist.DeleteAllItems();
+
+	while (guilist.DeleteColumn(0));
+
+	guilist.InsertColumn(0, TEXT("Path"), LVCFMT_LEFT, 400);
+	guilist.InsertColumn(1, TEXT("Name"), LVCFMT_LEFT, 80);	
 }
 
 
@@ -92,18 +102,33 @@ void CManagerGUIView::OnStyleChanged(int nStyleType, LPSTYLESTRUCT lpStyleStruct
 void CManagerGUIView::OnListUpdated()
 {
 	CListCtrl &guilist = GetListCtrl();
-	guilist.ModifyStyle(NULL, LVS_REPORT);
-	guilist.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 	guilist.DeleteAllItems();
-
-	while (guilist.DeleteColumn(0));
-
-	guilist.InsertColumn(0, TEXT("Path"), LVCFMT_LEFT, 80);
 
 
 	vector<FileInfo> &contents = GetDocument()->list;
 	unsigned int count = 0;
+	unsigned int length = guilist.GetItemCount();
 	for (auto &fInfo : contents) {
-		guilist.InsertItem(count++, combinePathAndName(fInfo.path, fInfo.name).c_str());
+		guilist.InsertItem(count + length, fInfo.path.c_str());
+		guilist.SetItemText(count + length, 1, fInfo.name.c_str());
+
+		count++;
+		if(count > maxRows)
+			break;
+	}
+}
+
+
+void CManagerGUIView::OnLoadmore()
+{
+	// TODO: Add your command handler code here
+	CListCtrl &guilist = GetListCtrl();
+
+	vector<FileInfo> &contents = GetDocument()->list;
+	unsigned int length = guilist.GetItemCount();
+	for (size_t i = length; i < contents.size() && i < maxRows + length; ++ i) {
+		const auto &fInfo = contents[i];
+		guilist.InsertItem(i , fInfo.path.c_str());
+		guilist.SetItemText(i , 1, fInfo.name.c_str());
 	}
 }

@@ -55,6 +55,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;      // fail to create
 	}
 
+	//CMFCToolBar
+	//CMFCToolBarEditCtrl edit();
+	//CMFCToolBarEditCtrl::Create;
+
 	if (!m_wndStatusBar.Create(this))
 	{
 		TRACE0("Failed to create status bar\n");

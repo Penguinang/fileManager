@@ -1,5 +1,8 @@
-main:
-	cd build && msbuild mediaManager.sln
+gui:
+	cd build && msbuild guiManager.vcxproj
+cli:
+	cd build && msbuild clilocate.vcxproj
+
 prepare:
 	cd build && cmake .. 
 clean:

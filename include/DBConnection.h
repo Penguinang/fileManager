@@ -9,6 +9,7 @@ using std::vector;
 #include <sqlite3.h>
 
 #include "FileSystem.h"
+#include "Scanner.h"
 
 // TODO: 
 // 数据库的操作已经是瓶颈了，所以应该将数据库的修改缓存起来，批量提交

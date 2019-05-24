@@ -42,6 +42,8 @@ public:
     tstring nameKeyword;
 };
 
+typedef void (*MessageAccepter)(const string&, void*);
+
 /**
  * create  and update database 
  */
@@ -49,9 +51,11 @@ class Updater{
 public:
     ExtensionFilter eFilter;
     NameFilter bFilter;
+    MessageAccepter accepter;
+    void *param;
 
 public:
-    Updater(const ExtensionFilter &eFilter = {}, const NameFilter &bFilter = {});
+    Updater(const ExtensionFilter &eFilter = {}, const NameFilter &bFilter = {}, MessageAccepter accepter = nullptr, void *param = nullptr);
     void Update(DBConnection &connection);
 
 private:

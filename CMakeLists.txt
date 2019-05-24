@@ -7,11 +7,15 @@ set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 cmake_policy(SET CMP0076 NEW)
 
-add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+add_compile_definitions(_CRT_SECURE_NO_WARNINGS
+#  _UNICODE UNICODE
+ )
 
-include_directories(include)
+include_directories(include src/MFCFrontEnd)
 link_directories(lib)
 link_libraries(sqlite3)
+add_compile_options(/MTd)
+set(CMAKE_MFC_FLAG 1)
 
 #################################################################################################################
 # 1. Cli utils, like mlocate
@@ -27,6 +31,9 @@ foreach(file ${CLI_SOURCE})
     target_sources(clilocate PUBLIC include/${file}.h)
 endforeach(file ${CLI_SOURCE})
 target_sources(clilocate PUBLIC src/cliLocate.cpp)
+target_sources(clilocate PUBLIC include/tstring.h)
+target_sources(clilocate PUBLIC src/MFCFrontEnd/stdafx.h)
+target_sources(clilocate PUBLIC src/MFCFrontEnd/stdafx.cpp)
 
 
 #################################################################################################################
@@ -39,6 +46,7 @@ set(GUI_SOURCE
     ManagerGUI
     ManagerGUIDoc
     ManagerGUIView
+    UpdateDialog
     stdafx
 )
 add_executable(guiManager WIN32)
@@ -51,13 +59,13 @@ foreach(file ${CLI_SOURCE})
     target_sources(guiManager PUBLIC include/${file}.h)
 endforeach(file ${CLI_SOURCE})
 
+target_sources(guiManager PUBLIC include/tstring.h)
 target_sources(guiManager PUBLIC src/MFCFrontEnd/ManagerGUI.rc)
 target_sources(guiManager PUBLIC src/MFCFrontEnd/res/ManagerGUI.rc2)
 target_include_directories(guiManager PUBLIC src/MFCFrontEnd)
 
-set(CMAKE_MFC_FLAG 1)
-target_compile_definitions(guiManager PUBLIC -D_AFXDLL -D_UNICODE -DUNICODE -D_WINDOWS -D_DEBUG)
-target_link_options(guiManager PUBLIC "-subsystem:windows")
+target_compile_definitions(guiManager PUBLIC -D_WINDOWS -D_DEBUG)
+target_link_options(guiManager PUBLIC "-subsystem:windows"  )
 
 #################################################################################################################
 # Ended

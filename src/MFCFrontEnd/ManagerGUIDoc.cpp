@@ -1,4 +1,4 @@
-
+﻿
 // ManagerGUIDoc.cpp : implementation of the CManagerGUIDoc class
 //
 
@@ -16,6 +16,7 @@
 #include "ManagerGUIView.h"
 #include "MainFrm.h"
 #include "LeftView.h"
+#include "UpdateDialog.h"
 
 
 
@@ -30,6 +31,7 @@
 IMPLEMENT_DYNCREATE(CManagerGUIDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CManagerGUIDoc, CDocument)
+	ON_COMMAND(ID_UPDATE, &CManagerGUIDoc::OnUpdateDB)
 END_MESSAGE_MAP()
 
 
@@ -39,7 +41,9 @@ CManagerGUIDoc::CManagerGUIDoc() noexcept :
 	conn(new CachedDBConnection("db/media.db")), 
 	locater(new Locater({{ 
 		TEXT("mp3"),  TEXT("wav"),  TEXT("jpg"),  TEXT("png"),  TEXT("gif"),  TEXT("jpeg"),  
-		TEXT("mp4"),  TEXT("mkv"),  TEXT("doc"),  TEXT("docx"),  TEXT("pdf") }}))
+		TEXT("mp4"),  TEXT("mkv"),  TEXT("doc"),  TEXT("docx"),  TEXT("pdf") }}, {
+			//TEXT("code\\cpp")
+		}))
 {
 	// TODO: add one-time construction code here
 	//scanner->Update(*conn);
@@ -154,9 +158,15 @@ void CManagerGUIDoc::Dump(CDumpContext& dc) const
 
 // CManagerGUIDoc commands
 
-
+#include <string>
 void CManagerGUIDoc::OnTreeSelChanged(MEDIA type)
 {
+
+	tstring w = TEXT("这是一个文件");
+	std::string a = to_string(w);
+	std::wstring c(a.begin(), a.end());
+	int la = sizeof(TCHAR);
+
 	switch (type)
 	{
 	case MEDIA::SONG:
@@ -188,4 +198,12 @@ void CManagerGUIDoc::OnTreeSelChanged(MEDIA type)
 	CView *view = GetNextView(ps);
 	CMainFrame *frame = DYNAMIC_DOWNCAST(CMainFrame, view->GetParentFrame());
 	frame->GetMiddlePane()->OnListUpdated();
+}
+
+
+void CManagerGUIDoc::OnUpdateDB()
+{
+	// TODO: Add your command handler code here
+	UpdateDialog uDlg(conn);
+	uDlg.DoModal();
 }

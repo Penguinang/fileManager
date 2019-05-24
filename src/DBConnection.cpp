@@ -1,4 +1,4 @@
-#include <vector>
+﻿#include <vector>
 using std::vector;
 #include <sstream>
 using std::istringstream;
@@ -10,6 +10,7 @@ using std::put_time;
 using std::find;
 
 #include <ctime>
+#include "stdafx.h"
 
 #include "Scanner.h"
 #include "DBConnection.h"
