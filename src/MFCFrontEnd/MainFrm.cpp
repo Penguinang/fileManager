@@ -54,10 +54,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		TRACE0("Failed to create toolbar\n");
 		return -1;      // fail to create
 	}
-
-	//CMFCToolBar
-	//CMFCToolBarEditCtrl edit();
-	//CMFCToolBarEditCtrl::Create;
+	
+	m_wndComBox.Create(WS_CHILD | WS_VISIBLE | WS_VSCROLL, CRect(200, 0, 400, 25), this, 1);
 
 	if (!m_wndStatusBar.Create(this))
 	{
@@ -136,6 +134,12 @@ CRightView *CMainFrame::GetRightPane() {
 	CRightView* pView = DYNAMIC_DOWNCAST(CRightView, pWnd);
 	return pView;
 }
+
+
+CComboBox &CMainFrame::GetSearchBar() {
+	return m_wndComBox;
+}
+
 
 
 void CMainFrame::OnUpdateViewStyles(CCmdUI* pCmdUI)

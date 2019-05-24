@@ -32,6 +32,8 @@ IMPLEMENT_DYNCREATE(CManagerGUIDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CManagerGUIDoc, CDocument)
 	ON_COMMAND(ID_UPDATE, &CManagerGUIDoc::OnUpdateDB)
+	ON_COMMAND(ID_LOADMORE, &CManagerGUIDoc::OnLoadmore)
+	ON_COMMAND(ID_SEARCH, &CManagerGUIDoc::OnSearchButton)
 END_MESSAGE_MAP()
 
 
@@ -194,6 +196,9 @@ void CManagerGUIDoc::OnTreeSelChanged(MEDIA type)
 		break;
 	}
 
+	if (filtered)
+		ConstructFilteredList();
+
 	POSITION ps = GetFirstViewPosition();
 	CView *view = GetNextView(ps);
 	CMainFrame *frame = DYNAMIC_DOWNCAST(CMainFrame, view->GetParentFrame());
@@ -206,4 +211,51 @@ void CManagerGUIDoc::OnUpdateDB()
 	// TODO: Add your command handler code here
 	UpdateDialog uDlg(conn);
 	uDlg.DoModal();
+	OnTreeSelChanged(MEDIA::ALL);
+}
+
+
+void CManagerGUIDoc::OnLoadmore()
+{
+	POSITION ps = GetFirstViewPosition();
+	CView *view = GetNextView(ps);
+	CMainFrame *frame = DYNAMIC_DOWNCAST(CMainFrame, view->GetParentFrame());
+	frame->GetMiddlePane()->OnLoadmore();
+}
+
+vector<FileInfo> &CManagerGUIDoc::GetList() {
+	if (!filtered) {
+		return list;
+	}
+	else {
+		return filteredList;
+	}
+}
+
+void CManagerGUIDoc::OnSearchButton()
+{
+	POSITION ps = GetFirstViewPosition();
+	CView *view = GetNextView(ps);
+	CMainFrame *frame = DYNAMIC_DOWNCAST(CMainFrame, view->GetParentFrame());
+	CComboBox &searchBar = frame->GetSearchBar();
+
+	searchBar.GetWindowTextA(filter);
+	if (filter.GetLength() != 0) {
+		filtered = true;
+		ConstructFilteredList();
+	}
+	else {
+		filtered = false;
+	}
+
+	frame->GetMiddlePane()->OnListUpdated();
+}
+
+void CManagerGUIDoc::ConstructFilteredList() {
+	filteredList.clear();
+	for (auto &fInfo : list) {
+		if (combinePathAndName(fInfo.name, fInfo.path).find(filter.GetString(), 0) != string::npos) {
+			filteredList.push_back(fInfo);
+		}
+	}
 }

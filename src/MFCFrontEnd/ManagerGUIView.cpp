@@ -28,7 +28,7 @@ IMPLEMENT_DYNCREATE(CManagerGUIView, CListView)
 
 BEGIN_MESSAGE_MAP(CManagerGUIView, CListView)
 	ON_WM_STYLECHANGED()
-	ON_COMMAND(ID_LOADMORE, &CManagerGUIView::OnLoadmore)
+	ON_NOTIFY_REFLECT(NM_DBLCLK, &CManagerGUIView::OnNMDblclk)
 END_MESSAGE_MAP()
 
 // CManagerGUIView construction/destruction
@@ -105,7 +105,7 @@ void CManagerGUIView::OnListUpdated()
 	guilist.DeleteAllItems();
 
 
-	vector<FileInfo> &contents = GetDocument()->list;
+	vector<FileInfo> &contents = GetDocument()->GetList();
 	unsigned int count = 0;
 	unsigned int length = guilist.GetItemCount();
 	for (auto &fInfo : contents) {
@@ -124,11 +124,26 @@ void CManagerGUIView::OnLoadmore()
 	// TODO: Add your command handler code here
 	CListCtrl &guilist = GetListCtrl();
 
-	vector<FileInfo> &contents = GetDocument()->list;
+	vector<FileInfo> &contents = GetDocument()->GetList();
 	unsigned int length = guilist.GetItemCount();
 	for (size_t i = length; i < contents.size() && i < maxRows + length; ++ i) {
 		const auto &fInfo = contents[i];
 		guilist.InsertItem(i , fInfo.path.c_str());
 		guilist.SetItemText(i , 1, fInfo.name.c_str());
 	}
+}
+
+
+void CManagerGUIView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	// TODO: Add your control notification handler code here
+
+	CListCtrl &guilist = GetListCtrl();
+	int index = pNMItemActivate->iItem;
+	CString path = guilist.GetItemText(index, 0);
+	CString name = guilist.GetItemText(index, 1);
+	ShellExecute(0, 0, combinePathAndName(path.GetString(), name.GetString()).c_str(), 0, 0, SW_SHOW);
+
+	*pResult = 0;
 }

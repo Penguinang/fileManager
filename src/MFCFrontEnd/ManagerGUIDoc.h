@@ -68,8 +68,18 @@ private:
 	shared_ptr<Locater> locater;
 	shared_ptr<DBConnection> conn;
 
-public:
 	vector<FileInfo> list;
+	bool filtered = false;
+	CString filter = "";
+	vector<FileInfo> filteredList;
+
+protected:
+	void ConstructFilteredList();
+
+public:
+	vector<FileInfo> &GetList();
 	void OnTreeSelChanged(MEDIA type);
 	afx_msg void OnUpdateDB();
+	afx_msg void OnLoadmore();
+	afx_msg void OnSearchButton();
 };

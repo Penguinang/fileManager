@@ -41,7 +41,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	void OnListUpdated();
-	afx_msg void OnLoadmore();
+	void OnLoadmore();
+	afx_msg void OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult);
 };
 
 #ifndef _DEBUG  // debug version in ManagerGUIView.cpp

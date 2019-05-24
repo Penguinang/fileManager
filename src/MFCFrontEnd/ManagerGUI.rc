@@ -198,6 +198,19 @@ BEGIN
     SEPARATOR
     BUTTON      ID_LOADMORE
     BUTTON      ID_UPDATE
+    SEPARATOR
+    BUTTON      ID_BUTTON32784
+    BUTTON      ID_BUTTON32785
+    SEPARATOR
+    BUTTON      ID_BUTTON32786
+    BUTTON      ID_BUTTON32787
+    BUTTON      ID_BUTTON32788
+    BUTTON      ID_BUTTON32789
+    BUTTON      ID_BUTTON32790
+    BUTTON      ID_BUTTON32791
+    BUTTON      ID_BUTTON32792
+    BUTTON      ID_BUTTON32793
+    BUTTON      ID_SEARCH
 END
 
 
@@ -222,6 +235,7 @@ BEGIN
         MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
         MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
         MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
+        MENUITEM "Find",                        ID_EDIT_FIND
     END
     POPUP "&View"
     BEGIN
@@ -305,6 +319,7 @@ END
 STRINGTABLE
 BEGIN
     IDP_OLE_INIT_FAILED     "OLE initialization failed.  Make sure that the OLE libraries are the correct version."
+    ID_EDIT_FIND_COMBO      "Find the name\nFind"
 END
 
 STRINGTABLE
@@ -380,7 +395,7 @@ BEGIN
     ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
     ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
     ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
-    ID_EDIT_FIND            "Find the specified text\nFind"
+    ID_EDIT_FIND            "Find the specified name\nFind"
     ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
     ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
     ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
@@ -427,6 +442,11 @@ STRINGTABLE
 BEGIN
     ID_LOADMORE             "Load more item if exists\nLoad More"
     ID_UPDATE               "Update database\nUpdate DB"
+END
+
+STRINGTABLE
+BEGIN
+    ID_SEARCH               "Search names or path\nSearch name"
 END
 
 #endif    // English (United States) resources

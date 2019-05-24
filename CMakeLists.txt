@@ -59,6 +59,9 @@ foreach(file ${CLI_SOURCE})
     target_sources(guiManager PUBLIC include/${file}.h)
 endforeach(file ${CLI_SOURCE})
 
+## Precompiled header vc proj trick
+target_sources(guiManager PUBLIC build/stdafx.h)
+
 target_sources(guiManager PUBLIC include/tstring.h)
 target_sources(guiManager PUBLIC src/MFCFrontEnd/ManagerGUI.rc)
 target_sources(guiManager PUBLIC src/MFCFrontEnd/res/ManagerGUI.rc2)
