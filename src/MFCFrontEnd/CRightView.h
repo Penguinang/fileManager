@@ -22,6 +22,13 @@ public:
 
 protected:
 	DECLARE_MESSAGE_MAP()
+
+protected:
+	CStatic picture;
+	CStatic text;
+public:
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	void OnTargetChanged(CString &path, CString &name);
 };
 
 

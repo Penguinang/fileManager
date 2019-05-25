@@ -24,6 +24,10 @@ enum class MEDIA{
 	ALL
 };
 
+class CRightView;
+class CLeftView;
+class CManagerGUIView;
+
 class CManagerGUIDoc : public CDocument
 {
 protected: // create from serialization only
@@ -82,4 +86,8 @@ public:
 	afx_msg void OnUpdateDB();
 	afx_msg void OnLoadmore();
 	afx_msg void OnSearchButton();
+
+	CRightView *rightView;
+	CLeftView *leftView;
+	CManagerGUIView *middleView;
 };

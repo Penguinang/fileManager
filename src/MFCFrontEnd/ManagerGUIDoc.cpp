@@ -67,6 +67,9 @@ BOOL CManagerGUIDoc::OnNewDocument()
 	CMainFrame *frame = DYNAMIC_DOWNCAST(CMainFrame, view->GetParentFrame());
 	frame->GetLeftPane()->CreateItems();
 
+	leftView = frame->GetLeftPane();
+	rightView = frame->GetRightPane();
+	middleView = frame->GetMiddlePane();
 
 
 	return TRUE;

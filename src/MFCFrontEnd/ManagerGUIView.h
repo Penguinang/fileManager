@@ -43,6 +43,7 @@ public:
 	void OnListUpdated();
 	void OnLoadmore();
 	afx_msg void OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnLvnItemchanged(NMHDR *pNMHDR, LRESULT *pResult);
 };
 
 #ifndef _DEBUG  // debug version in ManagerGUIView.cpp

@@ -46,6 +46,8 @@ Updater::Updater(const ExtensionFilter &eFilter, const NameFilter &bFilter, Mess
 void Updater::Update(DBConnection &connection) {
     vector<tstring> drives = getDriveList();
     for (auto driveName : drives) {
+		// 去掉drive名字后面一个反斜线，符合一般路径名的模式
+		driveName.pop_back();
         recurDirCheck(driveName, connection);
     }
 }

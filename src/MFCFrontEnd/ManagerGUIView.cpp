@@ -13,7 +13,7 @@
 #include "FileSystem.h"
 #include "ManagerGUIDoc.h"
 #include "ManagerGUIView.h"
-
+#include "CRightView.h"
 #include <vector>
 using std::vector;
 
@@ -29,6 +29,7 @@ IMPLEMENT_DYNCREATE(CManagerGUIView, CListView)
 BEGIN_MESSAGE_MAP(CManagerGUIView, CListView)
 	ON_WM_STYLECHANGED()
 	ON_NOTIFY_REFLECT(NM_DBLCLK, &CManagerGUIView::OnNMDblclk)
+	ON_NOTIFY_REFLECT(LVN_ITEMCHANGED, &CManagerGUIView::OnLvnItemchanged)
 END_MESSAGE_MAP()
 
 // CManagerGUIView construction/destruction
@@ -145,5 +146,18 @@ void CManagerGUIView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 	CString name = guilist.GetItemText(index, 1);
 	ShellExecute(0, 0, combinePathAndName(path.GetString(), name.GetString()).c_str(), 0, 0, SW_SHOW);
 
+	*pResult = 0;
+}
+
+
+void CManagerGUIView::OnLvnItemchanged(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+
+	CListCtrl &guilist = GetListCtrl();
+	int index = pNMLV->iItem;
+	CString path = guilist.GetItemText(index, 0);
+	CString name = guilist.GetItemText(index, 1);
+	GetDocument()->rightView->OnTargetChanged(path, name);
 	*pResult = 0;
 }
